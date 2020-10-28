@@ -9,6 +9,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "antd": "^4.7.0",
+    "axios": "^0.21.0",
     "laravel-mix": "^5.0.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

@@ -162,20 +162,16 @@ function MainLayout(props) {
           ghost={false}
           // onBack={() => window.history.back()}
           title={props.meta.title}
-          subTitle="This is a subtitle"
-          extra={[
-            <Button key="3">Operation</Button>,
-            <Button key="2">Operation</Button>,
-            <Button key="1" type="primary">
-              Primary
-            </Button>,
-          ]}
+          subTitle={props.meta.subtitle}
+          extra={props.headerButtons}
         ></PageHeader>
+
         <Content style={{ margin: "16px" }}>
           <div className="site-layout-background" style={{ minHeight: 360 }}>
             {props.children}
           </div>
         </Content>
+        
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED
         </Footer>
