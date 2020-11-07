@@ -34,3 +34,13 @@ if (!function_exists('associative_to_flat')) {
         return [];
     }
 }
+
+if (!function_exists('debug')) {
+    function debug($data)
+    {
+        echo '<pre>';
+        print_r($data);
+        echo '</pre>';
+        die();
+    }
+}

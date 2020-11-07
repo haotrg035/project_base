@@ -21,4 +21,11 @@ class RoleModel extends Model
         $tmpData = $this->findAll();
         return $tmpData;
     }
+
+    public function getAllRoleName()
+    {
+        return array_map(function ($role) {
+            return $role->name;
+        }, $this->findAll());
+    }
 }

@@ -3,10 +3,10 @@
 namespace Admin\Models;
 
 use CodeIgniter\Model;
-use Config\Database;
 
 class UserModel extends Model
 {
+
     // protected $DBGroup = 'group_name';
     protected $table = 'users';
     protected $primaryKey = 'id';
@@ -52,54 +52,97 @@ class UserModel extends Model
      * @param integer $rowCount total of row returned.
      * @return void list of user entities
      */
-    public function getFilteredListUser(int $page = 1, array $filters = [], array $sort = [], string $search = '', int $rowCount = 10): array
-    {
-        $tempResult = $this;
-        if (!empty($search)) {
-            $tempResult = $tempResult->like('username', $search)->orLike('full_name', $search);
-        }
+    public function getFilteredListUser(
+        int $page = 1,
+        array $filters = [],
+        array $sort = [],
+        string $search = '',
+        int $rowCount = 10
+    ): array {
+        $query = $this;
+
         if (!empty($filters)) {
-            $db = Database::connect();
-            foreach ($filters as $key => $value) {
-                if (!empty($value)) {
-                    switch ($key) {
-                        case 'role':
-                            if ($value !== 'all') {
-                                if (in_array($value, config('Constant')->roleList)) {
-                                    $roleModel = model('RoleModel');
-                                    $selectedRole = $roleModel->where('name', strtolower($value))
-                                        ->get()->getCustomResultObject('App\Entities\Role')[0];
-                                    $listUserID = associative_to_flat($selectedRole->getUsers(), 'user_id');
-                                    $tempResult = $tempResult->whereIn('id', $listUserID);
-                                }
-                            }
-                            break;
-                        case 'gender':
-                            if ($value === 1 || $value === 'male') {
-                                $tempResult = $tempResult->where('gender', 1);
-                            }
-                            if ($value === 2 || $value === 'female') {
-                                $tempResult = $tempResult->where('gender', 2);
-                            }
-                            break;
-                    }
-                }
-            }
-            $db->close();
+            $query = $this->filterResult($filters, $query);
         }
 
-        if (!empty($sort)) {
-            if (empty($sort['order'])) {
-                $sort['order'] = 'asc';
+
+        if (!empty($sort['field'])) {
+            if (empty(trim($sort['order'])) || $sort['order'] === 'ascend') {
+                $sort['order'] = 'ASC';
+            } else {
+                $sort['order'] = 'DESC';
             }
-            $tempResult = $tempResult->orderBy($sort['field'], $sort['order']);
-        }  
-        $result = [
-            'total' => $tempResult->countAll(),
-            'page' => $page,
-            'data' => $tempResult->paginate($rowCount, 'default', $page)
-        ];
-        
-        return $result;
+        } else {
+            $sort = [
+                'field' => 'id',
+                'order' => 'desc'
+            ];
+        }
+
+        $_result = $query->orderBy($sort['field'], $sort['order'])
+            ->paginate($rowCount, 'default', $page);
+        $_resultCount = $query->countAllResults();
+
+        return [
+            'total' => $_resultCount,
+            'current' => $page,
+            'data' => $_result
+        ];;
+    }
+
+    protected function filterResultByRole(
+        array $roleFilterParams,
+        UserModel $modelInstance
+    ): UserModel {
+        $roleModel = model('Admin\RoleModel');
+        $roleList = $roleModel->findAll();
+        $_listAvailableRoles = array_map(function ($role) {
+            return $role->name;
+        }, $roleList);
+        $listUserID = [];
+        foreach ($roleFilterParams as $filterValue) {
+            if (in_array($filterValue, $_listAvailableRoles)) {
+                $_selectedRole = null;
+                foreach ($roleList as $role) {
+                    if ($role->name === $filterValue) {
+                        $_selectedRole = $role;
+                    }
+                }
+                $listUserID = array_merge(
+                    $listUserID,
+                    associative_to_flat(
+                        $_selectedRole->getUsers(),
+                        'user_id'
+                    )
+                );
+            }
+        }
+
+        return $modelInstance->whereIn('id', $listUserID);
+    }
+
+    protected function filterResult(
+        array $filters,
+        UserModel $modelInstance
+    ): UserModel {
+        $_modelInstance = $modelInstance;
+        foreach ($filters as $key => $value) {
+            if (!is_null($value)) {
+                switch ($key) {
+                    case 'role':
+                        $_modelInstance = $this->filterResultByRole($value, $modelInstance);
+                        break;
+                    case 'gender':
+                        if ($value === 1 || $value === 'male') {
+                            $_modelInstance = $modelInstance->where('gender', 1);
+                        }
+                        if ($value === 2 || $value === 'female') {
+                            $_modelInstance = $modelInstance->where('gender', 2);
+                        }
+                        break;
+                }
+            }
+        }
+        return $_modelInstance;
     }
 }
