@@ -11,26 +11,7 @@ class User extends BaseResourcePresenter
 
     public function index()
     {
-        if ($this->request->isAJAX()) {
-            $_result = $this->model->getFilteredListUser(
-                $this->request->getGet('current') ?? 1,
-                json_decode($this->request->getGet('filters'), true),
-                [
-                    'field' => $this->request->getGet('sortField') ?? 'id',
-                    'order' => $this->request->getGet('sortOrder') ?? 'asc',
-                ],
-                '',
-                $this->request->getGet('pageSize'),
-            );
-            
-            $_result['data'] = $this->renderUserList($_result['data']);
-            return json_encode($_result);
-        }
-        
         $this->setMeta('Người Dùng', 'Quản lý danh sách người dùng');
-        $_result = $this->model->getFilteredListUser();
-        $_result['data'] = $this->renderUserList($_result['data']);
-        $this->data['data']['user'] = $_result;
         return view('Admin\Views\Pages\User\index', $this->data);
     }
 

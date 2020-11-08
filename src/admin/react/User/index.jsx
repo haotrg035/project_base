@@ -9,6 +9,8 @@ import {
   Popconfirm,
   Form,
   Modal,
+  message,
+  Typography,
 } from "antd";
 import MainLayout from "../Layouts/MainLayout";
 import {
@@ -31,8 +33,8 @@ function UserIndex(props) {
   const [sorters, setSoters] = useState({});
   const [pagination, setPagination] = useState({
     pageSize: 10,
-    current: props.appData.data.user.page,
-    total: props.appData.data.user.total,
+    current: 1,
+    total: 1,
   });
 
   const [modalUpdateVisible, setModalUpdateVisible] = useState(false);
@@ -53,17 +55,6 @@ function UserIndex(props) {
       </Button>,
     ];
   };
-
-  useEffect(() => {
-    const _data = Object.assign([], props.appData.data.user.data);
-
-    _data.map((value) => {
-      let tmpValue = value;
-      tmpValue.key = value.id;
-      return tmpValue;
-    });
-    setData(_data);
-  }, []);
 
   const columns = [
     {
@@ -96,7 +87,7 @@ function UserIndex(props) {
       key: "username",
     },
     {
-      title: "Chức vụ",
+      title: "Loại tài khoản",
       key: "role",
       dataIndex: "role",
       filters: [
@@ -149,7 +140,11 @@ function UserIndex(props) {
     },
   ];
 
-  const handleTableChange = (inputPagination, inputFilters, inputSorter) => {
+  const handleTableChange = (
+    inputPagination = {},
+    inputFilters = {},
+    inputSorter = {}
+  ) => {
     let _params = {};
 
     _params = {
@@ -166,7 +161,7 @@ function UserIndex(props) {
     setFilters(inputFilters);
     setLoading(true);
     axios
-      .get("/admin/users", {
+      .get("api/users", {
         headers: {
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",
@@ -191,7 +186,11 @@ function UserIndex(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
+        if (error.response.data.status !== undefined) {
+          message.error(error.response.data.messages.error);
+          return false;
+        }
+        message.error("Đã có lỗi xảy ra!");
       });
   };
 
@@ -211,12 +210,17 @@ function UserIndex(props) {
   };
 
   const handleUpdateUser = (values) => {
-    setLoading(true)
+    setLoading(true);
     console.log(values);
   };
   const handleAddUser = (values) => {
     console.log(values);
   };
+
+  useEffect(() => {
+    handleTableChange(pagination);
+  }, []);
+
   return (
     <MainLayout {...props.appData} headerButtons={headerButtons()}>
       <Table
@@ -229,9 +233,25 @@ function UserIndex(props) {
           pageSize: pagination.pageSize,
         }}
         onChange={handleTableChange}
+        locale={{
+          filterConfirm: "Lọc",
+          filterReset: "Bỏ lọc",
+          emptyText: "Không có dữ liệu",
+          filterTitle: "Lọc",
+          sortTitle: "Sắp xếp",
+          triggerAsc: "Click để sắp xếp tăng dần",
+          triggerDesc: "Click để sắp xếp giảm dần",
+        }}
       />
       <Modal
-        title="CẬP NHẬT NGƯỜI DÙNG"
+        title={
+          <Space>
+            <UserAddOutlined style={{ color: "#1890ff" }} />
+            <Typography.Text style={{ color: "#1890ff" }} strong={true}>
+              CẬP NHẬT NGƯỜI DÙNG
+            </Typography.Text>
+          </Space>
+        }
         centered
         visible={modalUpdateVisible}
         closable={false}
@@ -253,7 +273,14 @@ function UserIndex(props) {
         <FormUpdateUser form={formUpdate} onFinish={handleUpdateUser} />
       </Modal>
       <Modal
-        title="THÊM NGƯỜI DÙNG"
+        title={
+          <Space>
+            <UserAddOutlined style={{ color: "#1890ff" }} />
+            <Typography.Text style={{ color: "#1890ff" }} strong={true}>
+              THÊM NGƯỜI DÙNG
+            </Typography.Text>
+          </Space>
+        }
         centered
         closable={false}
         visible={modalAddVisible}

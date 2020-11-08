@@ -15,7 +15,6 @@
 
     <script>
     const appData = document.getElementById('app-data');
-    console.log(JSON.parse(appData.value));
     </script>
     <?=$this->renderSection('page-script');?>
     <!-- <script>

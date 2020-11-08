@@ -14,7 +14,6 @@ class UserModel extends Model
     protected $allowedFields = ['username', 'full_name', 'birthday', 'gender', 'avatar'];
     protected $useSoftDeletes = true;
     protected $useTimestamps = true;
-
     protected $validationRules = [
         'username' => 'required|alpha_numeric_space|min_length[3]',
         'email' => 'required|valid_email|is_unique[users.email]',
@@ -37,6 +36,7 @@ class UserModel extends Model
     {
         return $this->allowedFilterFields;
     }
+
     public function getAllowedSortFields(): array
     {
         return $this->allowedSortFields;
@@ -65,7 +65,6 @@ class UserModel extends Model
             $query = $this->filterResult($filters, $query);
         }
 
-
         if (!empty($sort['field'])) {
             if (empty(trim($sort['order'])) || $sort['order'] === 'ascend') {
                 $sort['order'] = 'ASC';
@@ -90,10 +89,8 @@ class UserModel extends Model
         ];;
     }
 
-    protected function filterResultByRole(
-        array $roleFilterParams,
-        UserModel $modelInstance
-    ): UserModel {
+    protected function filterResultByRole(array $roleFilterParams, UserModel $modelInstance): UserModel
+    {
         $roleModel = model('Admin\RoleModel');
         $roleList = $roleModel->findAll();
         $_listAvailableRoles = array_map(function ($role) {
@@ -121,10 +118,8 @@ class UserModel extends Model
         return $modelInstance->whereIn('id', $listUserID);
     }
 
-    protected function filterResult(
-        array $filters,
-        UserModel $modelInstance
-    ): UserModel {
+    protected function filterResult(array $filters, UserModel $modelInstance): UserModel
+    {
         $_modelInstance = $modelInstance;
         foreach ($filters as $key => $value) {
             if (!is_null($value)) {
