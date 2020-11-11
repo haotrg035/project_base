@@ -5,11 +5,11 @@ function FormUpdateUser(props) {
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
-      sm: { span: 6 },
+      sm: { span: 8 },
     },
     wrapperCol: {
       xs: { span: 24 },
-      sm: { span: 18 },
+      sm: { span: 16 },
     },
   };
 
@@ -33,20 +33,36 @@ function FormUpdateUser(props) {
         label="Tài khoản"
         rules={[{ required: true, message: "Vui lòng nhập tên tài khoản" }]}
       >
-        <Input placeholder="Nhập họ tên tài khoản" />
+        <Input placeholder="Nhập họ tên tài khoản" readOnly={true} />
       </Form.Item>
       <Form.Item
         name="password"
-        label="Mật khẩu"
-        rules={[
-          {
-            required: true,
-            message: "Vui lòng nhập mật khẩu!",
-          },
-        ]}
+        label="Mật khẩu mới"
         hasFeedback
       >
         <Input.Password placeholder="Nhập mật khẩu" />
+      </Form.Item>
+      <Form.Item
+        name="confirm_passworđ"
+        label="Xác nhận mật khẩu"
+        dependencies={["password"]}
+        hasFeedback
+        rules={[
+          // {
+          //   required: true,
+          //   message: "Vui lòng xác nhận lại mật khẩu!",
+          // },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject("Mật khẩu xác nhận không trùng khớp.");
+            },
+          }),
+        ]}
+      >
+        <Input.Password placeholder="Nhập lại mật khẩu" />
       </Form.Item>
       <Form.Item
         name="birthday"
@@ -62,17 +78,19 @@ function FormUpdateUser(props) {
       </Form.Item>
       <Form.Item
         name="role"
-        label={"Chức vụ"}
+        label={"Loại tài khoản"}
         rules={[
           {
             required: true,
-            message: "Vui lòng cho biết chức vụ của người dùng.",
+            message: "Vui lòng cho biết loại tài khoản.",
           },
         ]}
       >
-        <Select placeholder="Chọn chức vụ">
-          <Select.Option value="1">Administrator</Select.Option>
-          <Select.Option value="2">Manager</Select.Option>
+        <Select
+          placeholder="Chọn chức vụ"
+          style={{ textTransform: "capitalize" }}
+        >
+          {props.roleOptionList}
         </Select>
       </Form.Item>
     </Form>

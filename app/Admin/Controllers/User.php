@@ -3,6 +3,7 @@
 namespace Admin\Controllers;
 
 use Admin\Controllers\BaseResourcePresenter;
+use Admin\Models\RoleModel;
 
 class User extends BaseResourcePresenter
 {
@@ -11,7 +12,10 @@ class User extends BaseResourcePresenter
 
     public function index()
     {
+        $roleModel = new RoleModel();
+
         $this->setMeta('Người Dùng', 'Quản lý danh sách người dùng');
+        $this->data['role_list'] = $roleModel->getListRole(true);
         return view('Admin\Views\Pages\User\index', $this->data);
     }
 

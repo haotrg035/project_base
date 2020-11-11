@@ -15,10 +15,15 @@ class RoleModel extends Model
         'level' => 'required|is_natural_no_zero'
     ];
 
-    public function getListRole()
+    public function getListRole($isArray = false)
     {
         // TODO: check current user role to get lower level roles
         $tmpData = $this->findAll();
+        if ($isArray) {
+            $tmpData = array_map(function($role){
+                return $role->toArray();
+            },$tmpData);
+        }
         return $tmpData;
     }
 

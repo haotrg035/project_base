@@ -11,6 +11,7 @@ import {
   Modal,
   message,
   Typography,
+  Select,
 } from "antd";
 import MainLayout from "../Layouts/MainLayout";
 import {
@@ -18,6 +19,7 @@ import {
   DeleteFilled,
   DeleteOutlined,
   EditFilled,
+  EditOutlined,
   UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -193,7 +195,19 @@ function UserIndex(props) {
         message.error("Đã có lỗi xảy ra!");
       });
   };
-
+  const renderRoleList = () => {
+    return props.appData.role_list.map((role) => {
+      return (
+        <Select.Option
+          key={role.name}
+          value={role.id}
+          style={{ textTransform: "capitalize" }}
+        >
+          {role.name}
+        </Select.Option>
+      );
+    });
+  };
   const handleDeleteUser = (userID) => {
     let _params = {};
 
@@ -206,6 +220,21 @@ function UserIndex(props) {
   };
 
   const loadUserInfo = (userID) => {
+    axios
+      .get(`api/users/${userID}/edit`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+      .then((res) => {
+        formUpdate.setFieldsValue({
+          username: res.data.username,
+          full_name: res.data.full_name,
+          
+        });
+        console.log(res);
+      });
     setModalUpdateVisible(true);
   };
 
@@ -246,7 +275,7 @@ function UserIndex(props) {
       <Modal
         title={
           <Space>
-            <UserAddOutlined style={{ color: "#1890ff" }} />
+            <EditOutlined style={{ fontSize: "24px", color: "#1890ff" }} />
             <Typography.Text style={{ color: "#1890ff" }} strong={true}>
               CẬP NHẬT NGƯỜI DÙNG
             </Typography.Text>
@@ -270,12 +299,16 @@ function UserIndex(props) {
           </Button>,
         ]}
       >
-        <FormUpdateUser form={formUpdate} onFinish={handleUpdateUser} />
+        <FormUpdateUser
+          form={formUpdate}
+          onFinish={handleUpdateUser}
+          roleOptionList={renderRoleList()}
+        />
       </Modal>
       <Modal
         title={
           <Space>
-            <UserAddOutlined style={{ color: "#1890ff" }} />
+            <UserAddOutlined style={{ fontSize: "24px", color: "#1890ff" }} />
             <Typography.Text style={{ color: "#1890ff" }} strong={true}>
               THÊM NGƯỜI DÙNG
             </Typography.Text>
@@ -295,11 +328,15 @@ function UserIndex(props) {
             onClick={() => formAdd.submit()}
             icon={<CheckCircleFilled />}
           >
-            THêm
+            Thêm
           </Button>,
         ]}
       >
-        <FormAddUser form={formAdd} onFinish={handleAddUser} />
+        <FormAddUser
+          form={formAdd}
+          onFinish={handleAddUser}
+          roleOptionList={renderRoleList()}
+        />
       </Modal>
     </MainLayout>
   );

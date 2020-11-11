@@ -25,7 +25,6 @@ class UserModel extends Model
             'is_unique' => 'Sorry. That email has already been taken. Please choose another.',
         ],
     ];
-    protected $skipValidation = false;
     public $allowedFilterFields = [
         'role' => FILTER_SANITIZE_STRING,
         'gender' => FILTER_SANITIZE_STRING,

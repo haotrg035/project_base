@@ -9,6 +9,7 @@ use Config\Database;
 class User extends Entity
 {
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'birthday'];
+    protected $allowedFields = ['username', 'full_name', 'birthday', 'gender', 'avatar'];
 
     public function setPassword(string $pass)
     {
@@ -35,6 +36,15 @@ class User extends Entity
     {
         $timeStamp = Time::createFromFormat('Y-m-d', $this->attributes['birthday']);
         return $timeStamp->format('d/m/Y');
+    }
+
+    public function getPublicData()
+    {
+        $_result = [];
+        foreach ($this->allowedFields as $field) {
+            $_result[$field] = $this->attributes[$field]; 
+        }
+        return $_result;
     }
 
 }

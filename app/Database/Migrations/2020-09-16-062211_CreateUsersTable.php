@@ -17,6 +17,11 @@ class CreateUsersTable extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
+            'role_id' => [
+                'type' => 'INT',
+                'constraint' => 20,
+                'unsigned' => true,
+            ],
             'full_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
@@ -38,10 +43,10 @@ class CreateUsersTable extends Migration
                 'constraint' => 500,
                 'nullable' => true,
             ],
-            // 'api_token' =>[
-            //     'type' => 'VARCHAR',
-            //     'constraint' => 255
-            // ],
+            'api_token' =>[
+                'type' => 'VARCHAR',
+                'constraint' => 255
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
             ],
@@ -54,6 +59,7 @@ class CreateUsersTable extends Migration
                 'default' => null,
             ],
         ]);
+        $this->forge->addForeignKey('role_id', 'roles', 'id');
         $this->forge->addKey('id', true);
         $this->forge->createTable('users');
     }

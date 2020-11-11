@@ -85,17 +85,19 @@ function FormAddUser(props) {
       </Form.Item>
       <Form.Item
         name="role"
-        label={"Chức vụ"}
+        label={"Loại tài khoản"}
         rules={[
           {
             required: true,
-            message: "Vui lòng cho biết chức vụ của người dùng.",
+            message: "Vui lòng cho biết loại tài khoản.",
           },
         ]}
       >
-        <Select placeholder="Chọn chức vụ">
-          <Select.Option value="1">Administrator</Select.Option>
-          <Select.Option value="2">Manager</Select.Option>
+        <Select
+          placeholder="Chọn chức vụ"
+          style={{ textTransform: "capitalize" }}
+        >
+          {props.roleOptionList}
         </Select>
       </Form.Item>
     </Form>
