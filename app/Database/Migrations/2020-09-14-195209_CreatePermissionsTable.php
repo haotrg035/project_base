@@ -15,14 +15,14 @@ class CreatePermissionsTable extends Migration
                 'unsigned' => true,
                 'auto_increament' => true,
             ],
+            'group' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255
+            ],
             'name' => [
                 'type' => 'ENUM',
                 'constraint' => ['view', 'create', 'update', 'delete', 'force_delete', 'restore'],
             ],
-            'group' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255
-            ]
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('permissions');

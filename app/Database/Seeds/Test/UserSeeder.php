@@ -2,12 +2,14 @@
 
 namespace App\Database\Seeds\Test;
 
+use CodeIgniter\I18n\Time;
 use Faker\Factory as Faker;
 
 class UserSeeder extends \CodeIgniter\Database\Seeder
 {
     public function run()
     {
+        $time = new Time(config('App')->appTimezone);
         $faker = Faker::create();
         $data = [];
         for ($i = 0; $i < 20; $i++) {
@@ -16,20 +18,15 @@ class UserSeeder extends \CodeIgniter\Database\Seeder
                 'password' => password_hash('123456', PASSWORD_DEFAULT),
                 'full_name' => $faker->name,
                 'gender' => random_int(1, 2),
-                'birthday' => $faker->dateTime('-18 year')->format('Y-m-d'),
-                'updated_at' => date('Y-m-d H:i:s', time()),
-                'created_at' => date('Y-m-d H:i:s', time()),
+                'role_id' => 2,
+                'birthday' => $faker->dateTime('-20 year')->format('Y-m-d'),
+                'updated_at' => $time->now(),
+                'created_at' => $time->now(),
                 'deleted_at' => null,
             ];
         }
-
-        // print_r($data);
-        foreach ($data as $key => $value) {
-            $this->db->table('users')->insert($value);
-            $this->db->table('role_user')->insert([
-                'user_id' => $key + 2,
-                'role_id' => 2,
-            ]);
+        foreach ($data as  $item) {
+            $this->db->table('users')->insert($item);
         }
     }
 }

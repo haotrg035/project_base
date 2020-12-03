@@ -11,12 +11,13 @@
     "antd": "^4.7.0",
     "axios": "^0.21.0",
     "laravel-mix": "^5.0.7",
+    "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "cross-env": "^7.0.2",
-    "@babel/preset-react": "^7.10.4"
+    "@babel/preset-react": "^7.10.4",
+    "cross-env": "^7.0.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

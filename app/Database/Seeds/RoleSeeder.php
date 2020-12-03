@@ -15,10 +15,5 @@ class RoleSeeder extends \CodeIgniter\Database\Seeder
             $item['id'] = $key + 1;
             $this->db->table('roles')->insert($item);
         }
-
-        $this->db->table('role_user')->insert([
-            'user_id' => 1,
-            'role_id' => 1,
-        ]);
     }
 }

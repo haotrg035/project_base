@@ -74,7 +74,7 @@ function FormUpdateUser(props) {
           },
         ]}
       >
-        <DatePicker placeholder="Chọn ngày sinh" format="DD/MM/YYYY" />
+        <DatePicker placeholder="Chọn ngày sinh" format={props.dateFormat} />
       </Form.Item>
       <Form.Item
         name="role"

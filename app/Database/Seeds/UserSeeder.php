@@ -14,6 +14,7 @@ class UserSeeder extends \CodeIgniter\Database\Seeder
             'password' => password_hash('admin@123', PASSWORD_BCRYPT),
             'full_name' => 'CI Project Admin',
             'gender' => '1',
+            'role_id' => '1',
             'birthday' => '1998-01-08',
             'created_at' => $time->now(),
             'updated_at' => $time->now(),

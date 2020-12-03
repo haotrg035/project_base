@@ -28,7 +28,7 @@ class User extends ResourceController
 
     public function edit($id = null)
     {
-        if (!$id)
+        if (empty($id))
             return [];
 
         $_result = $this->model->find($id)->getPublicData();

@@ -11,7 +11,7 @@ class Role extends Entity
     {
         $db = Database::connect();
         $tmpResult = [];
-        $tmpResult = $db->table('role_user')->where('role_id', $this->attributes['id'])->get();
+        $tmpResult = $db->table('users')->where('role_id', $this->attributes['id'])->get();
         $db->close();
 
         return $tmpResult->getResultArray();
@@ -30,7 +30,6 @@ class Role extends Entity
         $permission_group_list = $permissionModel->getGroupPermissions();
         foreach ($permission_group_list as $group => $permissions) {
             $status = '';
-
             $_groupIDList = array_map(function ($permission) {
                 return $permission['id'];
             }, $permissions);

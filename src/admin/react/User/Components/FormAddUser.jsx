@@ -81,7 +81,7 @@ function FormAddUser(props) {
           },
         ]}
       >
-        <DatePicker placeholder="Chọn ngày sinh" format="DD/MM/YYYY" />
+        <DatePicker placeholder="Chọn ngày sinh" format="DD-MM-YYYY" />
       </Form.Item>
       <Form.Item
         name="role"

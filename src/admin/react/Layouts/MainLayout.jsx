@@ -1,11 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  Layout,
-  Menu,
-  Button,
-  Skeleton,
-  PageHeader,
-} from "antd";
+import { Layout, Menu, Button, Skeleton, PageHeader } from "antd";
 import "antd/dist/antd.css";
 import {
   DesktopOutlined,
@@ -19,7 +13,7 @@ const { SubMenu } = Menu;
 
 function MainLayout(props) {
   const [collapse, setCollapse] = useState(false);
-  
+
   const sidebarListItem = [
     {
       //Dashboard item
@@ -76,15 +70,21 @@ function MainLayout(props) {
       //Contacts item
       route: "/admin/users",
       label: "Người dùng",
-      icon: <UserOutlined />,
+      icon: <TeamOutlined />,
       children: [
-        { route: "/admin/users", label: "Quản lý", icon: <TeamOutlined /> },
-        {
-          route: "/admin/users/roles",
-          label: "Phân quyền",
-          icon: <UsergroupAddOutlined />,
-        },
+        // { route: "/admin/users", label: "Quản lý", icon: <TeamOutlined /> },
+        // {
+        //   route: "/admin/users/roles",
+        //   label: "Phân quyền",
+        //   icon: <UsergroupAddOutlined />,
+        // },
       ],
+    },
+    {
+      route: "/admin/roles",
+      label: "Phân quyền",
+      icon: <UsergroupAddOutlined />,
+      children: [],
     },
     // [
     //   //Setting item
@@ -123,7 +123,7 @@ function MainLayout(props) {
           </Menu.Item>
         );
       } else {
-        return (  
+        return (
           <SubMenu key={key} icon={item.icon} title={item.label}>
             {item.children.map((child, subkey) => (
               <Menu.Item key={"sub_" + subkey} icon={child.icon}>
@@ -157,8 +157,11 @@ function MainLayout(props) {
         </Menu>
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ background: "#fff", padding: "0 16px", height: 48 }}></Header>
+        <Header
+          style={{ background: "#fff", padding: "0 16px", height: 48 }}
+        ></Header>
         <PageHeader
+          style={{ padding: "16px", position: "sticky", top: "0" }}
           ghost={false}
           // onBack={() => window.history.back()}
           title={props.meta.title}
@@ -171,7 +174,7 @@ function MainLayout(props) {
             {props.children}
           </div>
         </Content>
-        
+
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2018 Created by Ant UED
         </Footer>

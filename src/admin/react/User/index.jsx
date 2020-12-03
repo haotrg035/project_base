@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import moment from "moment";
 import {
   Table,
   Tag,
@@ -12,6 +13,7 @@ import {
   message,
   Typography,
   Select,
+  Empty,
 } from "antd";
 import MainLayout from "../Layouts/MainLayout";
 import {
@@ -29,6 +31,7 @@ import FormAddUser from "./Components/FormAddUser";
 const axios = require("axios").default;
 
 function UserIndex(props) {
+  const dateFormat = "DD-MM-YYYY";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({});
@@ -91,22 +94,31 @@ function UserIndex(props) {
     {
       title: "Loại tài khoản",
       key: "role",
-      dataIndex: "role",
+      dataIndex: "role_id",
       filters: [
         { text: "Admin", value: "administrator" },
         { text: "Manager", value: "manager" },
       ],
-      render: (role) => {
-        let _color = "gray";
-        let _roleLevel = parseInt(role["level"]);
-        if (_roleLevel === 1) {
-          _color = "red";
-        } else if (_roleLevel === 2) {
-          _color = "blue";
+      render: (role_id) => {
+        let _color = "";
+        let _role = props.appData.role_list.filter((role) => {
+          return role.id === role_id;
+        })[0];
+
+        switch (parseInt(_role.level)) {
+          case 1:
+            _color = "red";
+            break;
+          case 2:
+            _color = "blue";
+            break;
+          default:
+            _color = "grays";
+            break;
         }
         return (
           <Tag color={_color} key="role">
-            {role["name"]}
+            {_role.name}
           </Tag>
         );
       },
@@ -133,6 +145,7 @@ function UserIndex(props) {
             okText="Xóa"
             okButtonProps={{ danger: true }}
             cancelText="Hủy"
+            align="right"
             icon={<DeleteOutlined style={{ color: "red" }} />}
           >
             <Button icon={<DeleteFilled />} danger />
@@ -163,13 +176,7 @@ function UserIndex(props) {
     setFilters(inputFilters);
     setLoading(true);
     axios
-      .get("api/users", {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
-        params: _params,
-      })
+      .get("api/users", { params: _params })
       .then((response) => {
         let newDataSource = Object.assign([], response.data.data);
 
@@ -220,21 +227,16 @@ function UserIndex(props) {
   };
 
   const loadUserInfo = (userID) => {
-    axios
-      .get(`api/users/${userID}/edit`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
-      })
-      .then((res) => {
-        formUpdate.setFieldsValue({
-          username: res.data.username,
-          full_name: res.data.full_name,
-          
-        });
-        console.log(res);
-      });
+    axios.get(`api/users/${userID}/edit`).then((res) => {
+      let newFormValue = {
+        username: res.data.username,
+        full_name: res.data.full_name,
+        birthday: moment(res.data.birthday, dateFormat),
+        role: res.data.role_id
+      };
+      
+      formUpdate.setFieldsValue(newFormValue);
+    });
     setModalUpdateVisible(true);
   };
 
@@ -247,6 +249,9 @@ function UserIndex(props) {
   };
 
   useEffect(() => {
+    axios.defaults.headers.common["Content-Type"] = "application/json";
+    axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
     handleTableChange(pagination);
   }, []);
 
@@ -265,11 +270,12 @@ function UserIndex(props) {
         locale={{
           filterConfirm: "Lọc",
           filterReset: "Bỏ lọc",
-          emptyText: "Không có dữ liệu",
+          emptyText: <Empty description="Không có dữ liệu" />,
           filterTitle: "Lọc",
           sortTitle: "Sắp xếp",
-          triggerAsc: "Click để sắp xếp tăng dần",
-          triggerDesc: "Click để sắp xếp giảm dần",
+          triggerAsc: "Tăng dần",
+          triggerDesc: "Giảm dần",
+          cancelSort: "Huỷ sắp xếp"
         }}
       />
       <Modal
@@ -301,6 +307,7 @@ function UserIndex(props) {
       >
         <FormUpdateUser
           form={formUpdate}
+          dateFormat={dateFormat}
           onFinish={handleUpdateUser}
           roleOptionList={renderRoleList()}
         />
@@ -334,6 +341,7 @@ function UserIndex(props) {
       >
         <FormAddUser
           form={formAdd}
+          dateFormat={dateFormat}
           onFinish={handleAddUser}
           roleOptionList={renderRoleList()}
         />

@@ -9,7 +9,7 @@ use Config\Database;
 class User extends Entity
 {
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'birthday'];
-    protected $allowedFields = ['username', 'full_name', 'birthday', 'gender', 'avatar'];
+    protected $allowedFields = ['username', 'role_id', 'full_name', 'birthday', 'gender', 'avatar'];
 
     public function setPassword(string $pass)
     {
@@ -20,11 +20,9 @@ class User extends Entity
     public function getRole()
     {
         $db = Database::connect();
-        $roleID = $db->table('role_user')->select('role_id')
-            ->where('user_id=', $this->attributes['id'])->get()->getFirstRow();
         if (!empty($roleID)) {
             $role = (array) $db->table('roles')
-                ->where('id', $roleID->role_id)->get()->getFirstRow();
+                ->where('id', $this->attributes['role_id'])->get()->getFirstRow();
             $db->close();
             return $role;
         }
@@ -34,17 +32,26 @@ class User extends Entity
 
     public function getBirth()
     {
-        $timeStamp = Time::createFromFormat('Y-m-d', $this->attributes['birthday']);
-        return $timeStamp->format('d/m/Y');
+        $timeStamp = Time::createFromFormat(
+            'Y-m-d',
+            $this->attributes['birthday']
+        );
+        return $timeStamp->format('d-m-Y');
     }
 
     public function getPublicData()
     {
         $_result = [];
         foreach ($this->allowedFields as $field) {
-            $_result[$field] = $this->attributes[$field]; 
+            if ($field === 'birthday') {
+                $_result[$field] = Time::createFromFormat(
+                    'Y-m-d',
+                    $this->attributes['birthday']
+                )->format('d-m-Y');
+                continue;
+            }
+            $_result[$field] = $this->attributes[$field];
         }
         return $_result;
     }
-
 }

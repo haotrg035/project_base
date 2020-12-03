@@ -17,9 +17,11 @@ $routes = Services::routes();
 // route since we don't have to scan directories.
 $routes->group('admin', ['namespace' => 'Admin\Controllers'], function ($routes) {
   $routes->presenter('users', ['controller' => 'User']);
+  $routes->presenter('roles', ['controller' => 'Role', 'only' => ['index']]);
 
   $routes->group('api', ['namespace' => 'Admin\Controllers\Api'], function ($routes) {
     $routes->resource('users', ['controller' => 'User']);
+    $routes->resource('roles', ['controller' => 'Role']);
   });
 });
 

@@ -76,45 +76,32 @@ class UserModel extends Model
                 'order' => 'desc'
             ];
         }
-
+        $_resultCount = $query->countAllResults(false);
         $_result = $query->orderBy($sort['field'], $sort['order'])
             ->paginate($rowCount, 'default', $page);
-        $_resultCount = $query->countAllResults();
 
         return [
             'total' => $_resultCount,
             'current' => $page,
             'data' => $_result
-        ];;
+        ];
     }
 
     protected function filterResultByRole(array $roleFilterParams, UserModel $modelInstance): UserModel
     {
         $roleModel = model('Admin\RoleModel');
         $roleList = $roleModel->findAll();
-        $_listAvailableRoles = array_map(function ($role) {
-            return $role->name;
-        }, $roleList);
-        $listUserID = [];
+
+        $_selectedRole = [];
         foreach ($roleFilterParams as $filterValue) {
-            if (in_array($filterValue, $_listAvailableRoles)) {
-                $_selectedRole = null;
-                foreach ($roleList as $role) {
-                    if ($role->name === $filterValue) {
-                        $_selectedRole = $role;
-                    }
+            foreach ($roleList as $role) {
+                if ($role->name === $filterValue) {
+                    $_selectedRole[] = $role->id;
                 }
-                $listUserID = array_merge(
-                    $listUserID,
-                    associative_to_flat(
-                        $_selectedRole->getUsers(),
-                        'user_id'
-                    )
-                );
             }
         }
-
-        return $modelInstance->whereIn('id', $listUserID);
+        // debug($_selectedRole);
+        return $modelInstance->whereIn('role_id', $_selectedRole);
     }
 
     protected function filterResult(array $filters, UserModel $modelInstance): UserModel
